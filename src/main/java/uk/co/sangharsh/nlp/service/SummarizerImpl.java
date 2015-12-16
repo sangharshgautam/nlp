@@ -120,8 +120,4 @@ public class SummarizerImpl implements Summarizer {
 	    }
 	  
 	}
-	@Override
-	public String test() {
-		return this.getClass().getName();
-	}
 }
