@@ -1,6 +1,5 @@
 package uk.co.sangharsh.nlp.service;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.Collections;
@@ -45,8 +44,8 @@ public class SummarizerImpl implements Summarizer {
 		pipeline = new StanfordCoreNLP(props);
 	}
 
-	private static Counter<String> loadDfCounter(String path)throws IOException, ClassNotFoundException {
-		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path));
+	private Counter<String> loadDfCounter(String path)throws IOException, ClassNotFoundException {
+		ObjectInputStream ois = new ObjectInputStream(this.getClass().getResourceAsStream(path));
 		Counter<String> readObject = (Counter<String>) ois.readObject();
 		ois.close();
 		return readObject;
