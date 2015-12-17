@@ -45,7 +45,7 @@ public class SummarizerImpl implements Summarizer {
 	}
 
 	private Counter<String> loadDfCounter(String path)throws IOException, ClassNotFoundException {
-		ObjectInputStream ois = new ObjectInputStream(this.getClass().getResourceAsStream(path));
+		ObjectInputStream ois = new ObjectInputStream(this.getClass().getClassLoader().getResourceAsStream(path));
 		Counter<String> readObject = (Counter<String>) ois.readObject();
 		ois.close();
 		return readObject;
