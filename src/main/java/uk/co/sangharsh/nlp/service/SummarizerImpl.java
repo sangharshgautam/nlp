@@ -1,5 +1,8 @@
 package uk.co.sangharsh.nlp.service;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -20,27 +23,34 @@ import edu.stanford.nlp.util.CoreMap;
 @Service
 public class SummarizerImpl implements Summarizer {
 
+	private static final String DF_COUNTER_PATH = "df-counts.ser";
+	
 	private StanfordCoreNLP pipeline;
 
-	private final Counter<String> dfCounter;
-	private final int numDocuments;
+	private Counter<String> dfCounter;
+	private int numDocuments;
 	 
-	public SummarizerImpl(){
-		this.dfCounter = new ClassicCounter<String>();
-	    this.numDocuments = (int) dfCounter.getCount("__all__");
-	}
 	@PostConstruct
-	public void setNlp() {
+	public void setNlp() throws ClassNotFoundException, IOException {
+		this.dfCounter = loadDfCounter(DF_COUNTER_PATH);
+	    this.numDocuments = (int) dfCounter.getCount("__all__");
+	    
 		Properties props = new Properties();
 		props.setProperty("annotators", "tokenize,ssplit,pos");
 		props.setProperty("tokenize.language", "en");
 		props.setProperty(
 				"pos.model",
-				"edu/stanford/nlp/models/pos-tagger/english/english-bidirectional-distsim.tagger");
+				"edu/stanford/nlp/models/pos-tagger/english/english-left3words-distsim.tagger");
 
 		pipeline = new StanfordCoreNLP(props);
 	}
 
+	private static Counter<String> loadDfCounter(String path)throws IOException, ClassNotFoundException {
+		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path));
+		Counter<String> readObject = (Counter<String>) ois.readObject();
+		ois.close();
+		return readObject;
+	}
 	@Override
 	public String summarize(String document, int numSentences) {
 		Annotation annotation = pipeline.process(document);
