@@ -21,7 +21,7 @@ import uk.co.sangharsh.nlp.service.NlpService;
 
 @Component
 @Path(NlpResource.ROOT)
-@Produces({MediaType.APPLICATION_XML})
+@Produces({MediaType.APPLICATION_JSON})
 public class NlpResource {
 	public static final String ROOT = "nlp";
 
