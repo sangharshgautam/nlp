@@ -2,6 +2,7 @@ package uk.co.sangharsh.nlp.service;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -11,6 +12,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Service;
 
+import edu.stanford.nlp.ie.crf.CRFClassifier;
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.Annotation;
@@ -20,7 +22,7 @@ import edu.stanford.nlp.stats.Counter;
 import edu.stanford.nlp.util.CoreMap;
 
 @Service
-public class SummarizerImpl implements Summarizer {
+public class NlpServiceImpl implements NlpService {
 
 	private static final String DF_COUNTER_PATH = "df-counts.ser";
 	
@@ -28,6 +30,8 @@ public class SummarizerImpl implements Summarizer {
 
 	private Counter<String> dfCounter;
 	private int numDocuments;
+	
+	private static final String serializedClassifier = "classifiers/english.all.3class.distsim.crf.ser.gz";
 	 
 	@PostConstruct
 	public void setNlp() throws ClassNotFoundException, IOException {
@@ -51,21 +55,18 @@ public class SummarizerImpl implements Summarizer {
 		return readObject;
 	}
 	@Override
-	public String summarize(String document, int numSentences) {
+	public List<String> summarize(String document, int numSentences) {
+		List<String> result = new ArrayList<String>();
 		Annotation annotation = pipeline.process(document);
-		List<CoreMap> sentences = annotation
-				.get(CoreAnnotations.SentencesAnnotation.class);
+		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 
 		Counter<String> tfs = getTermFrequencies(sentences);
 		sentences = rankSentences(sentences, tfs);
 
-		StringBuilder ret = new StringBuilder();
-		for (int i = 0; i < numSentences; i++) {
-			ret.append(sentences.get(i));
-			ret.append(" ");
+		for (CoreMap sentence: sentences) {
+			result.add(sentence.toString());
 		}
-
-		return ret.toString();
+		return result;
 	}
 
 	private static Counter<String> getTermFrequencies(List<CoreMap> sentences) {
@@ -130,5 +131,22 @@ public class SummarizerImpl implements Summarizer {
 	      return tf * idf;
 	    }
 	  
+	}
+	@Override
+	public List<String> recognizeNamedEntity(String text) {
+		List<String> result = new ArrayList<String>();
+		CRFClassifier<CoreLabel> classifier = CRFClassifier.getClassifierNoExceptions(serializedClassifier);
+	    List<List<CoreLabel>>	classify =	classifier.classify(text);
+        for (List<CoreLabel> coreLabels : classify) {
+            for (CoreLabel coreLabel : coreLabels) {
+                String word = coreLabel.word();
+                String answer = coreLabel.get(CoreAnnotations.AnswerAnnotation.class);
+                if(!"O".equals(answer)){
+                	result.add(word+" : "+answer);
+                }
+ 
+            }
+        }
+        return result;
 	}
 }
