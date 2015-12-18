@@ -50,7 +50,6 @@ public class NlpResource {
 	public Result recognizeNe(@QueryParam(value = "text") @DefaultValue(value = DEFAULT_TEXT) String text) {
 		List<String> namedEntity = nlpService.recognizeNamedEntity(text);
 		return Result.ok(namedEntity);
-		
 	}
 	
 }
