@@ -63,7 +63,7 @@ public class NlpServiceImpl implements NlpService {
 		Counter<String> tfs = getTermFrequencies(sentences);
 		sentences = rankSentences(sentences, tfs);
 
-		for (CoreMap sentence: sentences) {
+		for (CoreMap sentence: sentences.subList(0, numSentences)) {
 			result.add(sentence.toString());
 		}
 		return result;
