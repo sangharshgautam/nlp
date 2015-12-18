@@ -2,8 +2,10 @@ package uk.co.sangharsh.nlp.resource;
 
 import java.util.List;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -14,11 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.sangharsh.nlp.resource.pojo.Result;
+import uk.co.sangharsh.nlp.resource.pojo.SummarizeRequest;
 import uk.co.sangharsh.nlp.service.NlpService;
 
 @Component
 @Path(NlpResource.ROOT)
-@Produces(MediaType.APPLICATION_JSON)
+@Produces({MediaType.APPLICATION_XML})
 public class NlpResource {
 	public static final String ROOT = "nlp";
 
@@ -33,7 +36,15 @@ public class NlpResource {
 		List<String> summary = nlpService.summarize(text, lines);
 		return Result.ok(summary);
 	}
-	
+
+	@POST
+	@Path("summarize/{lines}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Result summarize(SummarizeRequest request) {
+		System.out.println(request);
+		List<String> summary = nlpService.summarize(request.text(), request.lines());
+		return Result.ok(summary);
+	}
 	@GET
 	@Path("recognize/ne")
 	public Result recognizeNe(@QueryParam(value = "text") @DefaultValue(value = DEFAULT_TEXT) String text) {
