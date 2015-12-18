@@ -26,14 +26,16 @@ import edu.stanford.nlp.util.CoreMap;
 @Service
 public class NlpServiceImpl implements NlpService {
 
-	private static final String DF_COUNTER_PATH = "/var/lib/openshift/5671bd132d527185c6000072/app-root/repo/nlp-resources/df-counts.ser";
+	private static final String NLP_RESOURCE = "/var/lib/openshift/5671bd132d527185c6000072/app-root/repo/nlp-resources/";
+
+	private static final String DF_COUNTER_PATH = NLP_RESOURCE+"df-counts.ser";
 	
 	private StanfordCoreNLP pipeline;
 
 	private Counter<String> dfCounter;
 	private int numDocuments;
 	
-	private static final String serializedClassifier = "classifiers/english.all.3class.distsim.crf.ser.gz";
+	private static final String SERIALIZED_CLASSIFIER = NLP_RESOURCE + "classifiers/english.all.3class.distsim.crf.ser.gz";
 	 
 	@PostConstruct
 	public void setNlp() throws ClassNotFoundException, IOException {
@@ -137,7 +139,7 @@ public class NlpServiceImpl implements NlpService {
 	@Override
 	public List<String> recognizeNamedEntity(String text) {
 		List<String> result = new ArrayList<String>();
-		CRFClassifier<CoreLabel> classifier = CRFClassifier.getClassifierNoExceptions(serializedClassifier);
+		CRFClassifier<CoreLabel> classifier = CRFClassifier.getClassifierNoExceptions(SERIALIZED_CLASSIFIER);
 	    List<List<CoreLabel>>	classify =	classifier.classify(text);
         for (List<CoreLabel> coreLabels : classify) {
             for (CoreLabel coreLabel : coreLabels) {
