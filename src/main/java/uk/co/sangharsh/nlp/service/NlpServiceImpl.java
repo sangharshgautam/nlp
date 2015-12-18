@@ -1,5 +1,7 @@
 package uk.co.sangharsh.nlp.service;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ import edu.stanford.nlp.util.CoreMap;
 @Service
 public class NlpServiceImpl implements NlpService {
 
-	private static final String DF_COUNTER_PATH = "df-counts.ser";
+	private static final String DF_COUNTER_PATH = "/var/lib/openshift/5671bd132d527185c6000072/app-root/repo/nlp-resources/df-counts.ser";
 	
 	private StanfordCoreNLP pipeline;
 
@@ -49,7 +51,7 @@ public class NlpServiceImpl implements NlpService {
 	}
 
 	private Counter<String> loadDfCounter(String path)throws IOException, ClassNotFoundException {
-		ObjectInputStream ois = new ObjectInputStream(this.getClass().getClassLoader().getResourceAsStream(path));
+		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File(path)));
 		Counter<String> readObject = (Counter<String>) ois.readObject();
 		ois.close();
 		return readObject;
