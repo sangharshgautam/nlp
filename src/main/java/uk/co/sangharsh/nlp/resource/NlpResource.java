@@ -38,13 +38,12 @@ public class NlpResource {
 	}
 
 	@POST
-	@Path("summarize/{lines}")
+	@Path("summarize")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Result summarize(SummarizeRequest request) {
 		System.out.println(request);
 		List<String> summary = nlpService.summarize(request.text(), request.lines());
 		return Result.ok(summary);
-		
 	}
 	@GET
 	@Path("recognize/ne")
