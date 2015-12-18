@@ -44,6 +44,7 @@ public class NlpResource {
 		System.out.println(request);
 		List<String> summary = nlpService.summarize(request.text(), request.lines());
 		return Result.ok(summary);
+		
 	}
 	@GET
 	@Path("recognize/ne")
