@@ -36,16 +36,15 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import uk.co.sangharsh.nlp.service.PosUtil;
 import edu.stanford.nlp.io.IOUtils;
 import edu.stanford.nlp.io.ReaderInputStream;
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.ling.TaggedWord;
 import edu.stanford.nlp.process.DocumentPreprocessor;
-import edu.stanford.nlp.process.TokenizerFactory;
 import edu.stanford.nlp.stats.ClassicCounter;
 import edu.stanford.nlp.stats.Counter;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
-import edu.stanford.nlp.trees.international.spanish.SpanishTreebankLanguagePack;
 import edu.stanford.nlp.util.XMLUtils;
 
 public class DocumentFrequencyCounter {
@@ -88,13 +87,14 @@ public class DocumentFrequencyCounter {
 
       for (TaggedWord w : tagged) {
         String tag = w.tag();
-		if (tag.toUpperCase().startsWith("N"))
+		if (PosUtil.isNoun(tag))
           idfMap.incrementCount(w.word());
       }
     }
 
     return idfMap;
   }
+
 
   public static final String TAG_DOCUMENT = "DOC";
   public static final String TAG_TEXT = "TEXT";

@@ -1,6 +1,7 @@
 package uk.co.sangharsh.nlp.service;
 //http://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html
-public class Pos {
+public class PosUtil {
+	
 	public static final String COORDINATING_CONJUNCTION = "CC";
 	public static final String CARDINAL_NUMBER = "CD";
 	public static final String EXISTENTIAL_THERE = "EX";
@@ -20,6 +21,7 @@ public class Pos {
 		public static final String PLURAL = "NNS"; 
 		public static final String PROPER_SINGULAR = "NNP"; 
 		public static final String PROPER_PLURAL = "NNPS";
+		public static final String START = "N";
 	}
 	public static final String Predeterminer = "PDT";
 	public static final String POSSESSIVE_ENDING = "POS"; 
@@ -53,4 +55,7 @@ public class Pos {
 		public static final String POSSESSIVE_WH­PRONOUN = "WP$";
 		public static final String ADVERB = "WRB";
 	}
+	public static final boolean isNoun(String pos) {
+		return pos.toUpperCase().startsWith(PosUtil.Noun.START);
+	}	
 }

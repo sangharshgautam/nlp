@@ -112,9 +112,11 @@ public class SummarizerImpl implements Summarizer {
 
 	    private double tfIDFWeights(CoreMap sentence) {
 	      double total = 0;
-	      for (CoreLabel cl : sentence.get(CoreAnnotations.TokensAnnotation.class))
-	        if (cl.get(CoreAnnotations.PartOfSpeechAnnotation.class).startsWith("n"))
+	      for (CoreLabel cl : sentence.get(CoreAnnotations.TokensAnnotation.class)) {
+			String pos = cl.get(CoreAnnotations.PartOfSpeechAnnotation.class);
+			if (PosUtil.isNoun(pos))
 	          total += tfIDFWeight(cl.get(CoreAnnotations.TextAnnotation.class));
+		}
 
 	      return total;
 	    }
