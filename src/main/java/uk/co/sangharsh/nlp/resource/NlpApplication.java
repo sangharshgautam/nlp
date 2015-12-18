@@ -11,5 +11,6 @@ public class NlpApplication extends ResourceConfig{
 		packages(NlpResource.class.getPackage().getName());
 		register(MoxyJsonFeature.class);
 		register(LoggingFilter.class);
+		register(DefaultExceptionMapper.class);
     }
 }
