@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import uk.co.sangharsh.nlp.resource.pojo.Result;
 import uk.co.sangharsh.nlp.service.NlpService;
 
 @Component
@@ -28,14 +29,16 @@ public class NlpResource {
 	
 	@GET
 	@Path("summarize/{lines}")
-	public List<String> summarize(@PathParam(value = "lines") int lines, @QueryParam(value = "text") @DefaultValue(value = DEFAULT_TEXT) String text) {
-		return nlpService.summarize(text, lines);
+	public Result summarize(@PathParam(value = "lines") int lines, @QueryParam(value = "text") @DefaultValue(value = DEFAULT_TEXT) String text) {
+		List<String> summary = nlpService.summarize(text, lines);
+		return Result.ok(summary);
 	}
 	
 	@GET
 	@Path("recognize/ne")
-	public List<String> recognizeNe(@QueryParam(value = "text") @DefaultValue(value = DEFAULT_TEXT) String text) {
-		return nlpService.recognizeNamedEntity(text);
+	public Result recognizeNe(@QueryParam(value = "text") @DefaultValue(value = DEFAULT_TEXT) String text) {
+		List<String> namedEntity = nlpService.recognizeNamedEntity(text);
+		return Result.ok(namedEntity);
 	}
 	
 }
