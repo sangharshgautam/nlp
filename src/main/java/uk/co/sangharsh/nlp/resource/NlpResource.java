@@ -15,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import uk.co.sangharsh.nlp.resource.pojo.Conversation;
 import uk.co.sangharsh.nlp.resource.pojo.Result;
 import uk.co.sangharsh.nlp.resource.pojo.SummarizeRequest;
 import uk.co.sangharsh.nlp.service.NlpService;
@@ -32,7 +33,7 @@ public class NlpResource {
 	
 	@GET
 	@Path("summarize/{lines}")
-	public Result summarize(@PathParam(value = "lines") int lines, @QueryParam(value = "text") @DefaultValue(value = DEFAULT_TEXT) String text) {
+	public Result<String> summarize(@PathParam(value = "lines") int lines, @QueryParam(value = "text") @DefaultValue(value = DEFAULT_TEXT) String text) {
 		List<String> summary = nlpService.summarize(text, lines);
 		return Result.ok(summary);
 	}
@@ -40,14 +41,21 @@ public class NlpResource {
 	@POST
 	@Path("summarize")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Result summarize(SummarizeRequest request) {
-		System.out.println(request);
+	public Result<String> summarize(SummarizeRequest request) {
 		List<String> summary = nlpService.summarize(request.text(), request.lines());
 		return Result.ok(summary);
 	}
+	@POST
+	@Path("summarize/conversation/{lines}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Result<String> summarize(@PathParam(value = "lines") int lines, Conversation conversation) {
+		List<String> summary = nlpService.summarize(conversation, lines);
+		return Result.ok(summary);
+	}
+	
 	@GET
 	@Path("recognize/ne")
-	public Result recognizeNe(@QueryParam(value = "text") @DefaultValue(value = DEFAULT_TEXT) String text) {
+	public Result<String> recognizeNe(@QueryParam(value = "text") @DefaultValue(value = DEFAULT_TEXT) String text) {
 		List<String> namedEntity = nlpService.recognizeNamedEntity(text);
 		return Result.ok(namedEntity);
 	}

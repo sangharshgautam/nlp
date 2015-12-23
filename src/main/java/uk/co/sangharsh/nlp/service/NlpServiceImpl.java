@@ -14,6 +14,8 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Service;
 
+import uk.co.sangharsh.nlp.resource.pojo.Conversation;
+import uk.co.sangharsh.nlp.resource.pojo.Utterance;
 import edu.stanford.nlp.ie.crf.CRFClassifier;
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreLabel;
@@ -72,7 +74,14 @@ public class NlpServiceImpl implements NlpService {
 		}
 		return result;
 	}
-
+	@Override
+	public List<String> summarize(Conversation conversation, int numSentences) {
+		StringBuilder builder = new StringBuilder();
+		for(Utterance utterance : conversation.utterances()){
+			builder.append(utterance.speaker()).append(" said \"").append(utterance.text());
+		}
+		return summarize(builder.toString(), numSentences);
+	}
 	private static Counter<String> getTermFrequencies(List<CoreMap> sentences) {
 		Counter<String> ret = new ClassicCounter<String>();
 
