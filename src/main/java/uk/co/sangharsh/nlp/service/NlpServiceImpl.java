@@ -68,8 +68,8 @@ public class NlpServiceImpl implements NlpService {
 
 		Counter<String> tfs = getTermFrequencies(sentences);
 		sentences = rankSentences(sentences, tfs);
-
-		for (CoreMap sentence: sentences.subList(0, numSentences)) {
+		int max = Math.min(numSentences, sentences.size());
+		for (CoreMap sentence: sentences.subList(0, max-1)) {
 			result.add(sentence.toString());
 		}
 		return result;
