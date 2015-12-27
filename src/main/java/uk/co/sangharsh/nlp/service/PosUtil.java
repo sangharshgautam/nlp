@@ -56,6 +56,6 @@ public class PosUtil {
 		public static final String ADVERB = "WRB";
 	}
 	public static final boolean isNoun(String pos) {
-		return pos.toUpperCase().startsWith(PosUtil.Noun.START);
+		return pos == null? false: pos.toUpperCase().startsWith(PosUtil.Noun.START);
 	}	
 }
