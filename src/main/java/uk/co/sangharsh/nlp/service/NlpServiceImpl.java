@@ -72,6 +72,7 @@ public class NlpServiceImpl implements NlpService {
 	      label.setValue(word);
 	      labels.add(label);
 	    }
+	    
 	    return labels;
 	  }
 	@Override
