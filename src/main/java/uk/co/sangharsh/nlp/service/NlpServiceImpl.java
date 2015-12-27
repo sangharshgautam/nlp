@@ -76,7 +76,7 @@ public class NlpServiceImpl implements NlpService {
 	  }
 	@Override
 	public List<String> summarize(Conversation conversation, int numSentences) {
-		List<String> result = new ArrayList<String>();
+		/*List<String> result = new ArrayList<String>();
 		List<CoreMap> sentences = new ArrayList<>();
 		for(Utterance utterance : conversation.utterances()){
 			CoreMap map = new ArrayCoreMap(1);
@@ -90,7 +90,12 @@ public class NlpServiceImpl implements NlpService {
 		for (CoreMap sentence: sentences.subList(0, max-1)) {
 			result.add(sentence.toString());
 		}
-		return result;
+		return result;*/
+		StringBuilder builder = new StringBuilder();
+		for(Utterance utterance : conversation.utterances()){
+			builder.append(utterance.speaker()).append(" said ").append(utterance.text()).append(" ");
+		}
+		return summarize(builder.toString(), numSentences);
 	}
 	private static Counter<String> getTermFrequencies(List<CoreMap> sentences) {
 		Counter<String> ret = new ClassicCounter<String>();
