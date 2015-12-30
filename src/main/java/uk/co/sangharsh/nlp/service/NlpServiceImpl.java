@@ -2,6 +2,7 @@ package uk.co.sangharsh.nlp.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -19,7 +20,12 @@ import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.stats.ClassicCounter;
 import edu.stanford.nlp.stats.Counter;
-import edu.stanford.nlp.util.ArrayCoreMap;
+import edu.stanford.nlp.trees.GrammaticalStructure;
+import edu.stanford.nlp.trees.GrammaticalStructureFactory;
+import edu.stanford.nlp.trees.PennTreebankLanguagePack;
+import edu.stanford.nlp.trees.TreeCoreAnnotations.TreeAnnotation;
+import edu.stanford.nlp.trees.TreebankLanguagePack;
+import edu.stanford.nlp.trees.TypedDependency;
 import edu.stanford.nlp.util.CoreMap;
 
 @Service
@@ -34,6 +40,8 @@ public class NlpServiceImpl implements NlpService {
 	private Counter<String> dfCounter;
 	
 	private static final String SERIALIZED_CLASSIFIER = NLP_RESOURCE + "classifiers/english.all.3class.distsim.crf.ser.gz";
+	
+	private TreebankLanguagePack tlp = new PennTreebankLanguagePack();
 	 
 	@PostConstruct
 	public void setNlp() throws ClassNotFoundException, IOException {
@@ -97,6 +105,37 @@ public class NlpServiceImpl implements NlpService {
 		}
 		return summarize(builder.toString(), numSentences);
 	}
+	@Override
+	public List<String> actionitems(Conversation conversation) {
+		StringBuilder builder = new StringBuilder();
+		for(Utterance utterance : conversation.utterances()){
+			builder.append(utterance.text()).append("\n");
+		}
+		return actionItems(builder.toString());
+	}
+	private List<String> actionItems(String document) {
+		List<String> result = new ArrayList<String>();
+		Annotation annotation = pipeline.process(document);
+		GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
+		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
+		for(CoreMap sentence : sentences){
+			GrammaticalStructure gs = gsf.newGrammaticalStructure(sentence.get(TreeAnnotation.class));
+			Collection<TypedDependency> tdl = gs.typedDependenciesCCprocessed();
+			boolean hasNSubj = false;
+			for(TypedDependency td : tdl){
+				if(td.reln().getShortName().equalsIgnoreCase("nsubj")){
+					hasNSubj = true;
+					break;
+				}
+			}
+			if(!hasNSubj){
+				result.add(sentence.toString());
+			}
+		}
+		return result;
+	}
+
+
 	private static Counter<String> getTermFrequencies(List<CoreMap> sentences) {
 		Counter<String> ret = new ClassicCounter<String>();
 
@@ -130,4 +169,5 @@ public class NlpServiceImpl implements NlpService {
         }
         return result;
 	}
+
 }

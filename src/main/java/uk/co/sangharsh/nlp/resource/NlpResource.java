@@ -53,6 +53,14 @@ public class NlpResource {
 		return Result.ok(summary);
 	}
 	
+	@POST
+	@Path("actionitems/conversation")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Result<String> actionitems(Conversation conversation) {
+		List<String> summary = nlpService.actionitems(conversation);
+		return Result.ok(summary);
+	}
+	
 	@GET
 	@Path("recognize/ne")
 	public Result<String> recognizeNe(@QueryParam(value = "text") @DefaultValue(value = DEFAULT_TEXT) String text) {

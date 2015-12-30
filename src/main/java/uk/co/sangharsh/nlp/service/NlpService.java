@@ -10,4 +10,6 @@ public interface NlpService {
 	public List<String> recognizeNamedEntity(String text);
 
 	List<String> summarize(Conversation conversation, int lines);
+
+	List<String> actionitems(Conversation conversation);
 }
