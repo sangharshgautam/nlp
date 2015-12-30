@@ -64,7 +64,7 @@
 	       <artifactId>stanford-corenlp</artifactId>
 	       <version>${stanford.nlp.version}</version>
 	       <classifier>models</classifier>
-	       <scope>provided</scope>
+	       <scope>system</scope>
 	   </dependency>
 		<dependency>
 		    <groupId>org.glassfish.jersey.ext</groupId>
