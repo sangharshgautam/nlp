@@ -59,13 +59,14 @@
 			<artifactId>stanford-corenlp</artifactId>
 			<version>${stanford.nlp.version}</version>
 		</dependency>
-		<!-- <dependency>
+		<dependency>
 	       <groupId>edu.stanford.nlp</groupId>
 	       <artifactId>stanford-corenlp</artifactId>
 	       <version>${stanford.nlp.version}</version>
 	       <classifier>models</classifier>
 	       <scope>system</scope>
-	   </dependency> -->
+	       <systemPath>/var/lib/openshift/5671bd132d527185c6000072/app-root/logs/stanford-corenlp-3.4.1-models.jar</systemPath>
+	   </dependency>
 		<dependency>
 		    <groupId>org.glassfish.jersey.ext</groupId>
 		    <artifactId>jersey-spring3</artifactId>
