@@ -48,7 +48,7 @@ public class NlpServiceImpl implements NlpService {
 		this.dfCounter = ObjectUtil.loadObjectNoExceptions(DF_COUNTER_PATH, Counter.class);
 	    
 		Properties props = new Properties();
-		props.setProperty("annotators", "tokenize,ssplit,pos");
+		props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner, parse");
 		props.setProperty("tokenize.language", "en");
 		props.setProperty(
 				"pos.model",
