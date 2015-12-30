@@ -39,7 +39,6 @@ public class NlpServiceImpl implements NlpService {
 
 	private Counter<String> dfCounter;
 	
-	private static final String SERIALIZED_CLASSIFIER = NLP_RESOURCE + "classifiers/english.all.3class.distsim.crf.ser.gz";
 	
 	private TreebankLanguagePack tlp = new PennTreebankLanguagePack();
 	 
@@ -50,9 +49,6 @@ public class NlpServiceImpl implements NlpService {
 		Properties props = new Properties();
 		props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner, parse");
 		props.setProperty("tokenize.language", "en");
-		props.setProperty(
-				"pos.model",
-				"edu/stanford/nlp/models/pos-tagger/english/english-left3words-distsim.tagger");
 
 		pipeline = new StanfordCoreNLP(props);
 	}
@@ -155,7 +151,7 @@ public class NlpServiceImpl implements NlpService {
 	@Override
 	public List<String> recognizeNamedEntity(String text) {
 		List<String> result = new ArrayList<String>();
-		CRFClassifier<CoreLabel> classifier = CRFClassifier.getClassifierNoExceptions(SERIALIZED_CLASSIFIER);
+		/*CRFClassifier<CoreLabel> classifier = CRFClassifier.getClassifierNoExceptions(SERIALIZED_CLASSIFIER);
 	    List<List<CoreLabel>>	classify =	classifier.classify(text);
         for (List<CoreLabel> coreLabels : classify) {
             for (CoreLabel coreLabel : coreLabels) {
@@ -166,7 +162,7 @@ public class NlpServiceImpl implements NlpService {
                 }
  
             }
-        }
+        }*/
         return result;
 	}
 
