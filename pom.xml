@@ -59,6 +59,7 @@
 			<artifactId>stanford-corenlp</artifactId>
 			<version>${stanford.nlp.version}</version>
 		</dependency>
+		
 <!-- 		<dependency>
 	       <groupId>edu.stanford.nlp</groupId>
 	       <artifactId>stanford-corenlp</artifactId>
