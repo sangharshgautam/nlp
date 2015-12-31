@@ -43,6 +43,7 @@ public class NlpResource {
 		List<String> summary = nlpService.summarize(request.text(), request.lines());
 		return Result.ok(summary);
 	}
+	
 	@POST
 	@Path("summarize/conversation/{lines}")
 	@Consumes(MediaType.APPLICATION_JSON)
