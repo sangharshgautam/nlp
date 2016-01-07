@@ -97,7 +97,7 @@
 						<configuration>
 							<scanIntervalSeconds>10</scanIntervalSeconds>
 							<webApp>
-								<contextPath>/gennie</contextPath>
+								<contextPath>/</contextPath>
 							</webApp>
 						</configuration>
 					</plugin>
