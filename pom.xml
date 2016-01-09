@@ -99,6 +99,9 @@
 							<webApp>
 								<contextPath>/</contextPath>
 							</webApp>
+							<httpConnector>
+								<port>80</port>
+							</httpConnector>
 						</configuration>
 						<dependencies>
 							<dependency>
