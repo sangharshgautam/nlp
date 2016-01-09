@@ -60,12 +60,12 @@
 			<version>${stanford.nlp.version}</version>
 		</dependency>
 		
-<!-- 		<dependency>
+		<dependency>
 	       <groupId>edu.stanford.nlp</groupId>
 	       <artifactId>stanford-corenlp</artifactId>
 	       <version>${stanford.nlp.version}</version>
 	       <classifier>models</classifier>
-	   </dependency> -->
+	   </dependency>
 		<dependency>
 		    <groupId>org.glassfish.jersey.ext</groupId>
 		    <artifactId>jersey-spring3</artifactId>
@@ -123,6 +123,13 @@
 							<outputDirectory>webapps</outputDirectory>
 							<warName>ROOT</warName>
 						</configuration>
+						<dependencies>
+							<dependency>
+							    <groupId>commons-logging</groupId>
+							    <artifactId>commons-logging</artifactId>
+							    <version>1.2</version>
+							</dependency>
+						</dependencies>
 					</plugin>
 				</plugins>
 			</build>
