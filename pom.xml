@@ -100,8 +100,8 @@
 								<contextPath>/</contextPath>
 							</webApp>
 							<httpConnector>
-								<host>52.48.32.80</host>
-								<port>80</port>
+								<!-- <host>52.48.32.80</host> -->
+								<port>8080</port>
 							</httpConnector>
 						</configuration>
 						<dependencies>
