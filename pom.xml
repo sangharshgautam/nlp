@@ -100,6 +100,13 @@
 								<contextPath>/</contextPath>
 							</webApp>
 						</configuration>
+						<dependencies>
+							<dependency>
+							    <groupId>commons-logging</groupId>
+							    <artifactId>commons-logging</artifactId>
+							    <version>1.2</version>
+							</dependency>
+						</dependencies>
 					</plugin>
 				</plugins>
 			</build>
@@ -123,13 +130,6 @@
 							<outputDirectory>webapps</outputDirectory>
 							<warName>ROOT</warName>
 						</configuration>
-						<dependencies>
-							<dependency>
-							    <groupId>commons-logging</groupId>
-							    <artifactId>commons-logging</artifactId>
-							    <version>1.2</version>
-							</dependency>
-						</dependencies>
 					</plugin>
 				</plugins>
 			</build>
