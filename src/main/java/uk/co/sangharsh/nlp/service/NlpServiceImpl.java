@@ -31,7 +31,7 @@ import edu.stanford.nlp.util.CoreMap;
 @Service
 public class NlpServiceImpl implements NlpService {
 
-	private static final String NLP_RESOURCE = "/var/lib/openshift/5671bd132d527185c6000072/app-root/repo/nlp-resources/";
+	private static final String NLP_RESOURCE = "/home/ubuntu/GIT/nlp/nlp-resources/";
 
 	private static final String DF_COUNTER_PATH = NLP_RESOURCE+"df-counts.ser";
 	
@@ -47,7 +47,7 @@ public class NlpServiceImpl implements NlpService {
 		this.dfCounter = ObjectUtil.loadObjectNoExceptions(DF_COUNTER_PATH, Counter.class);
 	    
 		Properties props = new Properties();
-		props.setProperty("annotators", "tokenize,ssplit,pos"/*,lemma,ner, parse*/);
+		props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner, parse");
 		props.setProperty("tokenize.language", "en");
 
 		pipeline = new StanfordCoreNLP(props);
