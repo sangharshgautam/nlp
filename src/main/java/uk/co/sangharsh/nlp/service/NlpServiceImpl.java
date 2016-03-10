@@ -112,7 +112,9 @@ public class NlpServiceImpl implements NlpService {
 		}
 		List<String> result = new ArrayList<String>();
 		for(Dota dota : tasks){
-			result.add(dota.toString());
+			String string = dota.toString();
+			System.out.println("##  "+string);
+			result.add(string);
 		}
 		return result;
 	}
@@ -158,6 +160,7 @@ public class NlpServiceImpl implements NlpService {
 				System.out.println("ValidSubject: "+validSubject+" ValidVerb "+validVerb);
 				if(validSubject && validVerb){
 					action = extractActionDetails(governer);
+					task = new Task(subject, object, action);
 				}
 			}
 			//Algorithm 2: identify create commitment(sentence)

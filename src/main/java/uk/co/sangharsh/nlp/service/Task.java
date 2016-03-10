@@ -26,10 +26,28 @@ public class Task extends Commitment{
 		this.committed = true;
 	}
 
-	@Override
-	public String toString() {
-		return "Task [subject=" + subject + ", object=" + object + ", action="
-				+ action + ", committed=" + committed + "]";
+	public String getSubject() {
+		return subject;
+	}
+
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+
+	public String getObject() {
+		return object;
+	}
+
+	public void setObject(String object) {
+		this.object = object;
+	}
+
+	public boolean isCommitted() {
+		return committed;
+	}
+
+	public void setCommitted(boolean committed) {
+		this.committed = committed;
 	}
 
 }
