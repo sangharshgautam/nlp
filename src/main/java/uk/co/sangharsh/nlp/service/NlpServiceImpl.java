@@ -112,9 +112,9 @@ public class NlpServiceImpl implements NlpService {
 		}
 		List<String> result = new ArrayList<String>();
 		for(Dota dota : tasks){
-			String string = dota.toString();
-			System.out.println("##  "+string);
-			result.add(string);
+			String sentence = dota.sentence();
+			System.out.println("##  "+sentence);
+			result.add(sentence);
 		}
 		return result;
 	}
@@ -123,7 +123,7 @@ public class NlpServiceImpl implements NlpService {
 		Annotation document = pipeline.process(utterance.text());
 		List<CoreMap> sentences = document.get(SentencesAnnotation.class);
 		for(CoreMap sentence : sentences){
-			Dota task = new Task();
+			Dota task = new Task(sentence.toString());
 			Tree tree = sentence.get(TreeAnnotation.class);
 //			tree.pennPrint(System.out);
 			GrammaticalStructure gs = gsf.newGrammaticalStructure(tree);
@@ -160,7 +160,7 @@ public class NlpServiceImpl implements NlpService {
 				System.out.println("ValidSubject: "+validSubject+" ValidVerb "+validVerb);
 				if(validSubject && validVerb){
 					action = extractActionDetails(governer);
-					task = new Task(subject, object, action);
+					task = new Task(sentence.toString(), subject, object, action);
 				}
 			}
 			//Algorithm 2: identify create commitment(sentence)
@@ -179,12 +179,11 @@ public class NlpServiceImpl implements NlpService {
 					}
 				}
 			}
-			task = new Task(subject, object, action);
 			if(commitment){
 				if(task.isNotEmpty()){
 					
 				}else{
-					task = new Commitment();
+					task = new Commitment(sentence.toString());
 				}
 				task.commit(sender);
 			}

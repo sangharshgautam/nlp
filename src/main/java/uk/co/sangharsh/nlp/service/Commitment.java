@@ -3,7 +3,12 @@ package uk.co.sangharsh.nlp.service;
 
 public class Commitment implements Dota{
 
+	private String sentence;
 	private String debtor;
+
+	public Commitment(String sentence) {
+		this.sentence = sentence;
+	}
 
 	@Override
 	public boolean isNotEmpty() {
@@ -19,5 +24,7 @@ public class Commitment implements Dota{
 	public String toString() {
 		return "Commitment [debtor=" + debtor + "]";
 	}
-	
+	public String sentence() {
+		return sentence;
+	}
 }

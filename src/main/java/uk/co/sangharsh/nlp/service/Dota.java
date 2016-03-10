@@ -4,4 +4,5 @@ public interface Dota {
 	public boolean isNotEmpty();
 
 	public void commit(String sender);
+	public String sentence();
 }

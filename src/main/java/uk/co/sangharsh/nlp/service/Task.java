@@ -4,18 +4,21 @@ import edu.stanford.nlp.trees.TreeGraphNode;
 
 public class Task extends Commitment{
 
+	
 	private String subject;
 	private String object;
 	private TreeGraphNode action;
 	private boolean committed;
 
-	public Task(String subject, String object, TreeGraphNode action) {
+	public Task(String sentence, String subject, String object, TreeGraphNode action) {
+		super(sentence);
 		this.subject = subject;
 		this.object = object;
 		this.action = action;
 	}
 
-	public Task() {
+	public Task(String sentence) {
+		super(sentence);
 	}
 
 	public boolean isNotEmpty() {
@@ -50,4 +53,5 @@ public class Task extends Commitment{
 		this.committed = committed;
 	}
 
+	
 }
