@@ -13,21 +13,25 @@ import org.springframework.stereotype.Service;
 
 import uk.co.sangharsh.nlp.resource.pojo.Conversation;
 import uk.co.sangharsh.nlp.resource.pojo.Utterance;
-import edu.stanford.nlp.ie.crf.CRFClassifier;
 import edu.stanford.nlp.ling.CoreAnnotations;
+import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.stats.ClassicCounter;
 import edu.stanford.nlp.stats.Counter;
+import edu.stanford.nlp.trees.GrammaticalRelation;
 import edu.stanford.nlp.trees.GrammaticalStructure;
 import edu.stanford.nlp.trees.GrammaticalStructureFactory;
 import edu.stanford.nlp.trees.PennTreebankLanguagePack;
+import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.trees.TreeCoreAnnotations.TreeAnnotation;
+import edu.stanford.nlp.trees.TreeGraphNode;
 import edu.stanford.nlp.trees.TreebankLanguagePack;
 import edu.stanford.nlp.trees.TypedDependency;
 import edu.stanford.nlp.util.CoreMap;
-
+//sh -c "mvn jetty:run &"
 @Service
 public class NlpServiceImpl implements NlpService {
 
@@ -42,6 +46,8 @@ public class NlpServiceImpl implements NlpService {
 	
 	private TreebankLanguagePack tlp = new PennTreebankLanguagePack();
 	 
+	GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
+	
 	@PostConstruct
 	public void setNlp() throws ClassNotFoundException, IOException {
 		this.dfCounter = ObjectUtil.loadObjectNoExceptions(DF_COUNTER_PATH, Counter.class);
@@ -95,19 +101,97 @@ public class NlpServiceImpl implements NlpService {
 			result.add(sentence.toString());
 		}
 		return result;*/
-		StringBuilder builder = new StringBuilder();
-		for(Utterance utterance : conversation.utterances()){
-			builder.append(utterance.speaker()).append(" said ").append(utterance.text()).append(" ");
-		}
-		return summarize(builder.toString(), numSentences);
+		
+		return actionitems(conversation);
 	}
 	@Override
 	public List<String> actionitems(Conversation conversation) {
-		StringBuilder builder = new StringBuilder();
+		List<Dota> tasks = new ArrayList<Dota>();
 		for(Utterance utterance : conversation.utterances()){
-			builder.append(utterance.text()).append("\n");
+			tasks.addAll(processUtterance(utterance));
 		}
-		return actionItems(builder.toString());
+		List<String> result = new ArrayList<String>();
+		for(Dota dota : tasks){
+			result.add(dota.toString());
+		}
+		return result;
+	}
+	private List<Dota> processUtterance(Utterance utterance) {
+		List<Dota> tasks = new ArrayList<Dota>();
+		Annotation document = pipeline.process(utterance.text());
+		List<CoreMap> sentences = document.get(SentencesAnnotation.class);
+		for(CoreMap sentence : sentences){
+			Dota task = new Task();
+			Tree tree = sentence.get(TreeAnnotation.class);
+//			tree.pennPrint(System.out);
+			GrammaticalStructure gs = gsf.newGrammaticalStructure(tree);
+			Collection<TypedDependency> tdl = gs.typedDependenciesCollapsedTree();
+			
+			Collection<TypedDependency> nSubjs = getNSubjs(tdl);
+			String subject = null;
+			String object = null;
+			String sender = utterance.speaker();
+			TreeGraphNode action = null;
+			for(TypedDependency nsubj : nSubjs){
+				System.out.println(nsubj);
+				TreeGraphNode  dependent = nsubj.dep();
+				TreeGraphNode  governer = nsubj.gov();
+				boolean validSubject = false;
+				if(firstPerson(dependent)){
+					//first person
+					subject = sender;
+					validSubject = true;
+				}else if(secondPerson(dependent)){
+					subject = sender;
+					object = dependent.label().word();
+					validSubject = true;
+				}else if(thirdPerson(dependent)){
+					//third person
+					subject = sender;
+					object = dependent.label().word();//extractObject(sentence);
+					validSubject = validSubject(dependent);
+				}else{
+					System.out.println("Unhandled scenario");
+					
+				}
+				boolean validVerb = validVerb(governer);
+				System.out.println("ValidSubject: "+validSubject+" ValidVerb "+validVerb);
+				if(validSubject && validVerb){
+					action = extractActionDetails(governer);
+				}
+			}
+			//Algorithm 2: identify create commitment(sentence)
+			
+			
+			//check if the action is in present tense (VB)
+			boolean commitment = false;
+			if(action!=null && getPos(action).equals("VB")){
+				//check if there is a relation that associates the action with a modal verb or please.
+				for(TypedDependency td : tdl){
+					TreeGraphNode governer = td.gov();
+					TreeGraphNode dependent = td.dep();
+					if(hasCommitment(dependent, governer, action) || hasCommitment(governer, dependent, action)){
+						commitment = true;
+						break;
+					}
+				}
+			}
+			task = new Task(subject, object, action);
+			if(commitment){
+				if(task.isNotEmpty()){
+					
+				}else{
+					task = new Commitment();
+				}
+				task.commit(sender);
+			}
+			//Algorithm 3: identify delegate commitments(sentence)
+			if(task.isNotEmpty()){
+				System.out.println(task);
+				tasks.add(task);
+			}
+		}
+		return tasks;
 	}
 	private List<String> actionItems(String document) {
 		List<String> result = new ArrayList<String>();
@@ -165,5 +249,62 @@ public class NlpServiceImpl implements NlpService {
         }*/
         return result;
 	}
-
+	private static boolean hasCommitment(TreeGraphNode node1, TreeGraphNode node2, TreeGraphNode action) {
+		return node1.equals(action) && ("MD".equals(getPos(node2)) || "please".equalsIgnoreCase(node2.label().word()));
+	}
+	private static TreeGraphNode extractActionDetails(TreeGraphNode governer) {
+		String pos = getPos(governer);
+		return pos.toUpperCase().startsWith("VB") ? governer : null;
+	}
+	
+	private static boolean validVerb(TreeGraphNode governer) {
+		String pos = getPos(governer);
+		List<String> validVerbs =  new ArrayList<String>(){{
+			add("VB");
+			add("VBD");
+			add("VBP");
+			add("VBZ");
+			add("VBN");
+		}};
+		return validVerbs.contains(pos.toUpperCase());
+	}
+	private static boolean validSubject(TreeGraphNode dependent) {
+		CoreLabel label = dependent.label();
+		String pos = getPos(dependent);
+		List<String> validSubjectNer =  new ArrayList<String>(){{
+			add("PERSON");
+			add("ORGANIZATION");
+		}};
+		
+		return "NNP".equalsIgnoreCase(pos) || validSubjectNer.contains(label.ner().toUpperCase());
+	}
+	private static String extractObject(CoreMap sentence) {
+		return "Extract object";
+	}
+	private static boolean secondPerson(TreeGraphNode node) {
+		String pos = getPos(node);
+		return "PRP".equalsIgnoreCase(pos) && "You".equalsIgnoreCase(node.label().word());
+	}
+	private static String getPos(TreeGraphNode node) {
+		return node.label().get(PartOfSpeechAnnotation.class);
+	}
+	private static boolean thirdPerson(TreeGraphNode node) {
+		String pos = getPos(node);
+		return "NNP".equalsIgnoreCase(pos);
+	}
+	private static boolean firstPerson(TreeGraphNode node) {
+		String pos = getPos(node);
+		return "PRP".equalsIgnoreCase(pos) && "I".equalsIgnoreCase(node.label().word());
+	}
+	private static Collection<TypedDependency> getNSubjs(Collection<TypedDependency> tdl) {
+		List<TypedDependency> nsubjs = new ArrayList<TypedDependency>();
+		for(TypedDependency td : tdl){
+			TreeGraphNode gov= td.gov();
+			GrammaticalRelation gr = td.reln();
+			if("NSUBJ".equalsIgnoreCase(gr.getShortName())){
+				nsubjs.add(td);
+			}
+		}
+		return nsubjs;
+	}
 }
